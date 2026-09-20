@@ -50,6 +50,10 @@ def _source_conversation_count(platform: str, exported_dir: Path) -> int:
         from src.adapters.copilot import CopilotAdapter
 
         return sum(1 for _ in CopilotAdapter().grouped_conversations(exported_dir))
+    if platform == "gemini":
+        from src.adapters.gemini import GeminiAdapter
+
+        return sum(1 for _ in GeminiAdapter().grouped_conversations(exported_dir))
     raise NotImplementedError(platform)
 
 
@@ -88,6 +92,10 @@ def _get_adapter(platform: str):
         from src.adapters.copilot import CopilotAdapter
 
         return CopilotAdapter()
+    if platform == "gemini":
+        from src.adapters.gemini import GeminiAdapter
+
+        return GeminiAdapter()
     raise NotImplementedError(platform)
 
 
@@ -98,6 +106,21 @@ def _copilot_diagnostics(exported_dir: Path) -> dict:
     splits = sum(1 for _title, _rows, split_index in groups if split_index > 0)
     distinct_titles = len({title for title, _rows, _idx in groups})
     return {"distinct_titles": distinct_titles, "resulting_conversations": len(groups), "splits": splits}
+
+
+def _gemini_diagnostics(exported_dir: Path) -> dict:
+    from src.adapters.gemini import GeminiAdapter
+
+    adapter = GeminiAdapter()
+    groups, verb_counts, canvas_entries = adapter._canonical_groups(exported_dir)
+    turn_groups = {c: es for c, es in groups.items() if any(e.verb in ("Prompted", "Branched") for e in es)}
+    merged_groups = sum(1 for es in groups.values() if len({id_ for e in es for id_ in e.details_ids}) > 1)
+    return {
+        "verb_counts": dict(verb_counts),
+        "canonical_conversation_groups": len(turn_groups),
+        "groups_with_aliased_ids": merged_groups,
+        "canvas_activity_entries": len(canvas_entries),
+    }
 
 
 def _parse_ts(ts: str | None) -> datetime | None:
@@ -185,6 +208,7 @@ def run(platform: str) -> None:
                 "segment_mismatch_total": segment_mismatch_total,
                 "sesame_diagnostics": _sesame_diagnostics(exported_dir) if platform == "sesame" else None,
                 "copilot_diagnostics": _copilot_diagnostics(exported_dir) if platform == "copilot" else None,
+                "gemini_diagnostics": _gemini_diagnostics(exported_dir) if platform == "gemini" else None,
             }
         )
 
@@ -222,6 +246,14 @@ def _print_table(platform: str, rows: list[dict]) -> None:
             print(f"  distinct titles: {diag['distinct_titles']}  title-collision splits: {diag['splits']}")
             print(f"  NOTE: source_count is derived from the same title+gap-split logic as the")
             print(f"        adapter (no independent native conversation-id exists for this platform).")
+        if r.get("gemini_diagnostics") is not None:
+            diag = r["gemini_diagnostics"]
+            print(f"  activity entry verbs: {diag['verb_counts']}")
+            print(f"  canonical conversation groups: {diag['canonical_conversation_groups']}  "
+                  f"(groups with aliased/re-keyed ids: {diag['groups_with_aliased_ids']})")
+            print(f"  canvas-creation activity entries (-> artifacts): {diag['canvas_activity_entries']}")
+            print(f"  NOTE: source_count is derived from the same Details-link union-find grouping as")
+            print(f"        the adapter (no separate native conversation manifest exists to cross-check).")
         print()
 
     total_conv = sum(r["conv_count"] for r in rows)
