@@ -46,6 +46,10 @@ def _source_conversation_count(platform: str, exported_dir: Path) -> int:
 
         eligible, _skipped = SesameAdapter()._eligible_calls(exported_dir)
         return len(eligible)
+    if platform == "copilot":
+        from src.adapters.copilot import CopilotAdapter
+
+        return sum(1 for _ in CopilotAdapter().grouped_conversations(exported_dir))
     raise NotImplementedError(platform)
 
 
@@ -80,7 +84,20 @@ def _get_adapter(platform: str):
         from src.adapters.sesame import SesameAdapter
 
         return SesameAdapter()
+    if platform == "copilot":
+        from src.adapters.copilot import CopilotAdapter
+
+        return CopilotAdapter()
     raise NotImplementedError(platform)
+
+
+def _copilot_diagnostics(exported_dir: Path) -> dict:
+    from src.adapters.copilot import CopilotAdapter
+
+    groups = list(CopilotAdapter().grouped_conversations(exported_dir))
+    splits = sum(1 for _title, _rows, split_index in groups if split_index > 0)
+    distinct_titles = len({title for title, _rows, _idx in groups})
+    return {"distinct_titles": distinct_titles, "resulting_conversations": len(groups), "splits": splits}
 
 
 def _parse_ts(ts: str | None) -> datetime | None:
@@ -167,6 +184,7 @@ def run(platform: str) -> None:
                 "segment_merge_total": segment_merge_total,
                 "segment_mismatch_total": segment_mismatch_total,
                 "sesame_diagnostics": _sesame_diagnostics(exported_dir) if platform == "sesame" else None,
+                "copilot_diagnostics": _copilot_diagnostics(exported_dir) if platform == "copilot" else None,
             }
         )
 
@@ -199,6 +217,11 @@ def _print_table(platform: str, rows: list[dict]) -> None:
             print(f"  total_segments-vs-len(conversation) mismatches: {r['segment_mismatch_total']}")
             print(f"  calls in calls_data.json: {diag['total_calls']}  eligible (parsed): {diag['eligible_calls']}")
             print(f"  calls skipped: {diag['skipped_calls']}")
+        if r.get("copilot_diagnostics") is not None:
+            diag = r["copilot_diagnostics"]
+            print(f"  distinct titles: {diag['distinct_titles']}  title-collision splits: {diag['splits']}")
+            print(f"  NOTE: source_count is derived from the same title+gap-split logic as the")
+            print(f"        adapter (no independent native conversation-id exists for this platform).")
         print()
 
     total_conv = sum(r["conv_count"] for r in rows)
