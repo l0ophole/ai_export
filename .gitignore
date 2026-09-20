@@ -1,0 +1,5 @@
+exports/
+__pycache__/
+.venv/
+.remember/
+docs/
