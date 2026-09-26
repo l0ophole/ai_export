@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+from datetime import datetime, timezone
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Iterator
@@ -10,11 +11,22 @@ import ijson
 import orjson
 
 from src.adapter import Artifact, Conversation, Message
+from src.exclusions import load_exclusions
 
 ROOT_SENTINEL = "00000000-0000-4000-8000-000000000000"
 
 # Content-block types that carry displayable prose in chat_messages.content[].
 _TEXT_BLOCK_TYPES = {"text"}
+
+
+def _utc(ts: str | None) -> str | None:
+    """Normalize an ISO 8601 timestamp to UTC with a Z suffix."""
+    if not ts or ts.endswith("Z"):
+        return ts
+    dt = datetime.fromisoformat(ts)
+    if dt.tzinfo is None:
+        raise ValueError(f"naive timestamp {ts!r}")
+    return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 def _load_small_json(path: Path) -> Any:
@@ -30,6 +42,9 @@ def _stream_top_level_array(path: Path) -> Iterator[Any]:
 class ClaudeAdapter:
     platform = "claude"
 
+    def __init__(self, exclusions: dict[str, str] | None = None):
+        self.exclusions = load_exclusions() if exclusions is None else exclusions
+
     def discover(self, root: Path) -> Iterator[tuple[Path, str]]:
         for account_dir in sorted(root.iterdir()):
             exported = account_dir / "exported"
@@ -42,11 +57,15 @@ class ClaudeAdapter:
         conv_json = path / "conversations.json"
         if conv_json.exists():
             for raw in _stream_top_level_array(conv_json):
+                if f"claude:{account}:{raw['uuid']}" in self.exclusions:
+                    continue
                 yield self._conversation_from_chat_messages(raw, account, conv_json)
 
         design_dir = path / "design_chats"
         if design_dir.is_dir():
             for f in sorted(design_dir.glob("*.json")):
+                if f"claude:{account}:{f.stem}" in self.exclusions:
+                    continue
                 raw = _load_small_json(f)
                 yield self._conversation_from_design_chat(raw, account, f)
 
@@ -80,6 +99,9 @@ class ClaudeAdapter:
     ) -> Conversation:
         chat_messages = raw["chat_messages"]
         ordered, unreachable = self._linearize(chat_messages)
+        voice_mode = any(
+            b.get("type") == "voice_note" for m in chat_messages for b in (m.get("content") or [])
+        )
 
         dropped_blocks: Counter[str] = Counter()
         messages: list[Message] = []
@@ -102,7 +124,7 @@ class ClaudeAdapter:
                 text = m.get("text", "")
 
             messages.append(
-                Message(i=i, role=role, text=text, ts=m.get("created_at"), model=None)
+                Message(i=i, role=role, text=text, ts=_utc(m.get("created_at")), model=None)
             )
 
         native_id = raw["uuid"]
@@ -113,13 +135,14 @@ class ClaudeAdapter:
             native_id=native_id,
             kind="chat",
             title=raw.get("name") or None,
-            created_at=raw.get("created_at"),
-            updated_at=raw.get("updated_at"),
+            created_at=_utc(raw.get("created_at")),
+            updated_at=_utc(raw.get("updated_at")),
             model=None,
             project_ref=None,
             messages=messages,
             meta={
                 "summary": raw.get("summary"),
+                "voice_mode": voice_mode,
                 "unreachable_node_count": unreachable,
                 "dropped_content_blocks": dict(dropped_blocks),
                 "source_path": str(source_path),
@@ -143,7 +166,7 @@ class ClaudeAdapter:
             content = m.get("content") or {}
             if role == "user":
                 text = content.get("content", "") or ""
-                ts = content.get("timestamp") or m.get("created_at")
+                ts = _utc(content.get("timestamp") or m.get("created_at"))
             else:
                 text_parts = []
                 for b in content.get("contentBlocks") or []:
@@ -153,7 +176,7 @@ class ClaudeAdapter:
                     else:
                         dropped_blocks[btype] += 1
                 text = "\n\n".join(p for p in text_parts if p)
-                ts = m.get("created_at")
+                ts = _utc(m.get("created_at"))
 
             messages.append(Message(i=i, role=role, text=text, ts=ts, model=None))
 
@@ -164,8 +187,8 @@ class ClaudeAdapter:
             native_id=native_id,
             kind="design_chat",
             title=raw.get("title") or None,
-            created_at=raw.get("created_at"),
-            updated_at=raw.get("updated_at"),
+            created_at=_utc(raw.get("created_at")),
+            updated_at=_utc(raw.get("updated_at")),
             model=None,
             project_ref=project_ref,
             messages=messages,
@@ -200,7 +223,7 @@ class ClaudeAdapter:
                     kind="project_instructions",
                     source_path=str(f),
                     title=raw.get("name"),
-                    created_at=raw.get("created_at"),
+                    created_at=_utc(raw.get("created_at")),
                     text=template,
                     meta={
                         "project_uuid": project_uuid,
@@ -218,7 +241,7 @@ class ClaudeAdapter:
                     kind="project_doc",
                     source_path=str(f),
                     title=doc.get("filename"),
-                    created_at=doc.get("created_at"),
+                    created_at=_utc(doc.get("created_at")),
                     text=doc.get("content", ""),
                     meta={"project_uuid": project_uuid, "project_name": raw.get("name")},
                 )

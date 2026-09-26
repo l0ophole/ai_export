@@ -7,7 +7,7 @@ from src.adapters.claude import ClaudeAdapter
 class ClaudeFixtureTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.accounts, cls.convs, cls.arts = run(ClaudeAdapter())
+        cls.accounts, cls.convs, cls.arts = run(ClaudeAdapter(exclusions={}))
         cls.by_id = {c["native_id"]: c for c in cls.convs}
 
     def test_discover_accounts(self):
@@ -28,6 +28,19 @@ class ClaudeFixtureTest(unittest.TestCase):
     def test_dropped_blocks_counted(self):
         c = self.by_id["c1000000-0000-4000-8000-000000000001"]
         self.assertEqual(c["meta"]["dropped_content_blocks"], {"voice_note": 1, "tool_use": 1, "tool_result": 1})
+
+    def test_voice_mode_flag(self):
+        self.assertTrue(self.by_id["c1000000-0000-4000-8000-000000000001"]["meta"]["voice_mode"])
+        self.assertFalse(self.by_id["c1000000-0000-4000-8000-000000000002"]["meta"]["voice_mode"])
+
+    def test_exclusions_skip_chat_and_design_chat(self):
+        excluded = {
+            "claude:acct_a:c1000000-0000-4000-8000-000000000001": "test",
+            "claude:acct_a:d1000000-0000-4000-8000-000000000001": "test",
+        }
+        _, convs, _ = run(ClaudeAdapter(exclusions=excluded))
+        self.assertEqual(len(convs), 2)
+        self.assertFalse({c["uid"] for c in convs} & set(excluded))
 
     def test_legacy_text_fallback(self):
         c = self.by_id["c1000000-0000-4000-8000-000000000002"]

@@ -72,31 +72,9 @@ def _sesame_diagnostics(exported_dir: Path) -> dict:
 
 
 def _get_adapter(platform: str):
-    if platform == "claude":
-        from src.adapters.claude import ClaudeAdapter
+    from src.adapters import get_adapter
 
-        return ClaudeAdapter()
-    if platform == "grok":
-        from src.adapters.grok import GrokAdapter
-
-        return GrokAdapter()
-    if platform == "deepseek":
-        from src.adapters.deepseek import DeepseekAdapter
-
-        return DeepseekAdapter()
-    if platform == "sesame":
-        from src.adapters.sesame import SesameAdapter
-
-        return SesameAdapter()
-    if platform == "copilot":
-        from src.adapters.copilot import CopilotAdapter
-
-        return CopilotAdapter()
-    if platform == "gemini":
-        from src.adapters.gemini import GeminiAdapter
-
-        return GeminiAdapter()
-    raise NotImplementedError(platform)
+    return get_adapter(platform)
 
 
 def _copilot_diagnostics(exported_dir: Path) -> dict:
@@ -130,13 +108,17 @@ def _parse_ts(ts: str | None) -> datetime | None:
 
 
 def run(platform: str) -> None:
+    from src.exclusions import count_excluded, load_exclusions
+
     adapter = _get_adapter(platform)
+    exclusions = load_exclusions()
 
     now = datetime.now(timezone.utc)
     rows = []
 
     for exported_dir, account in adapter.discover(EXPORTS_ROOT / platform):
-        source_count = _source_conversation_count(platform, exported_dir)
+        excluded = count_excluded(exclusions, platform, account)
+        source_count = _source_conversation_count(platform, exported_dir) - excluded
 
         conv_count = 0
         msg_count = 0
@@ -146,6 +128,7 @@ def run(platform: str) -> None:
         dropped_blocks: Counter[str] = Counter()
         segment_merge_total = 0
         segment_mismatch_total = 0
+        voice_mode_count = 0
         min_date: datetime | None = None
         max_date: datetime | None = None
         epoch_1970 = 0
@@ -169,6 +152,7 @@ def run(platform: str) -> None:
             observe(_parse_ts(conv.get("created_at")))
             observe(_parse_ts(conv.get("updated_at")))
             unreachable_total += conv["meta"].get("unreachable_node_count", 0)
+            voice_mode_count += bool(conv["meta"].get("voice_mode"))
             for btype, cnt in conv["meta"].get("dropped_content_blocks", {}).items():
                 dropped_blocks[btype] += cnt
             segment_merge_total += conv["meta"].get("segment_merge_count", 0)
@@ -193,6 +177,8 @@ def run(platform: str) -> None:
             {
                 "account": account,
                 "source_count": source_count,
+                "excluded": excluded,
+                "voice_mode": voice_mode_count,
                 "conv_count": conv_count,
                 "msg_count": msg_count,
                 "role_counts": dict(role_counts),
@@ -229,6 +215,7 @@ def _print_table(platform: str, rows: list[dict]) -> None:
         lo, hi = r["date_range"]
         print(f"account: {r['account']}")
         print(f"  conversations: {r['conv_count']} (source: {r['source_count']}) {'OK' if r['conv_count'] == r['source_count'] else 'MISMATCH'}")
+        print(f"  excluded: {r['excluded']}  voice_mode conversations: {r['voice_mode']}")
         print(f"  messages: {r['msg_count']}  roles: {r['role_counts']}  bad_role: {r['null_or_unknown_role']}")
         print(f"  date range: {lo.isoformat() if lo else None} .. {hi.isoformat() if hi else None}")
         print(f"  epoch_1970: {r['epoch_1970']}  future_dates: {r['future_dates']}")

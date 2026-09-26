@@ -4,3 +4,6 @@ __pycache__/
 .remember/
 docs/
 .claude/worktrees/
+exclusions.json
+normalized/
+profile/
