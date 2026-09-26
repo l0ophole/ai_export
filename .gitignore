@@ -1,9 +1,9 @@
-exports/
+/exports/
 __pycache__/
 .venv/
 .remember/
 docs/
 .claude/worktrees/
 exclusions.json
-normalized/
-profile/
+/normalized/
+/profile/
