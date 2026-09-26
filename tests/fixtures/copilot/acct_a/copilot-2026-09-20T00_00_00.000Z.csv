@@ -1,0 +1,12 @@
+Conversation,Time,Author,Message
+Same Title,2026-01-15T10:00:00,Human,u1
+Same Title,2026-01-15T10:00:05,AI,"a1 line one
+a1 line two, with comma
+
+a1 ""quoted"" para"
+Other Title,2026-07-04T09:00:00,AI,a1-tie
+Other Title,2026-07-04T09:00:00,Human,u1-tie
+Same Title,2026-01-15T10:01:00,Human,u2
+Same Title,2026-01-15T10:01:05,AI,a2
+Same Title,2026-01-16T09:00:00,Human,u1-later
+Same Title,2026-01-16T09:00:05,AI,a1-later

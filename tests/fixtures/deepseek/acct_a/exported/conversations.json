@@ -1,0 +1,27 @@
+[
+  {
+    "id": "ds-conv-1",
+    "title": "fork",
+    "inserted_at": "2025-09-17T20:00:00.000000+08:00",
+    "updated_at": "2025-09-17T20:03:00.000000+08:00",
+    "mapping": {
+      "root": {"id": "root", "parent": null, "children": ["1"], "message": null},
+      "1": {"id": "1", "parent": "root", "children": ["2"], "message": {"inserted_at": "2025-09-17T20:00:00.000000+08:00", "model": "deepseek-reasoner", "fragments": [{"type": "REQUEST", "content": "u1"}]}},
+      "2": {"id": "2", "parent": "1", "children": ["3"], "message": {"inserted_at": "2025-09-17T20:00:10.000000+08:00", "model": "deepseek-reasoner", "fragments": [{"type": "THINK", "content": "th1"}, {"type": "SEARCH", "content": "s"}, {"type": "RESPONSE", "content": "a1"}]}},
+      "3": {"id": "3", "parent": "2", "children": ["4", "5"], "message": {"inserted_at": "2025-09-17T20:01:00.000000+08:00", "model": "deepseek-reasoner", "fragments": [{"type": "REQUEST", "content": "u2"}]}},
+      "4": {"id": "4", "parent": "3", "children": [], "message": {"inserted_at": "2025-09-17T20:01:10.000000+08:00", "model": "deepseek-reasoner", "fragments": [{"type": "RESPONSE", "content": "a2-old"}]}},
+      "5": {"id": "5", "parent": "3", "children": [], "message": {"inserted_at": "2025-09-17T20:03:00.000000+08:00", "model": "deepseek-reasoner", "fragments": [{"type": "RESPONSE", "content": "a2-new"}]}}
+    }
+  },
+  {
+    "id": "ds-conv-2",
+    "title": "empty generation",
+    "inserted_at": "2025-09-18T01:00:00.000000+08:00",
+    "updated_at": "2025-09-18T01:00:05.000000+08:00",
+    "mapping": {
+      "root": {"id": "root", "parent": null, "children": ["1"], "message": null},
+      "1": {"id": "1", "parent": "root", "children": ["2"], "message": {"inserted_at": "2025-09-18T01:00:00.000000+08:00", "model": "deepseek-reasoner", "fragments": [{"type": "REQUEST", "content": "u1"}]}},
+      "2": {"id": "2", "parent": "1", "children": [], "message": {"inserted_at": "2025-09-18T01:00:05.000000+08:00", "model": "deepseek-reasoner", "fragments": []}}
+    }
+  }
+]

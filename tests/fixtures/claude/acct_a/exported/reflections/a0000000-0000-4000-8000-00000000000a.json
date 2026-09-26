@@ -1,0 +1,5 @@
+{
+  "account_uuid": "a0000000-0000-4000-8000-00000000000a",
+  "feedback": [{"period": "2026-W01", "content": "fb1", "created_at": "2026-01-05T00:00:00.000000Z", "updated_at": "2026-01-05T00:00:00.000000Z"}],
+  "reflections": [{"period": "2026-01", "content": {"r": "rf1"}, "created_at": "2026-02-01T00:00:00.000000Z", "updated_at": "2026-02-01T00:00:00.000000Z"}]
+}

@@ -1,0 +1,6 @@
+{
+  "account_uuid": "a0000000-0000-4000-8000-00000000000a",
+  "conversations_memory": "mem1",
+  "project_memories": {"p1000000-0000-4000-8000-000000000001": "pmem1"},
+  "memory_files": [{"path": "/memories/f1.md", "content": "mf1", "updated_at": "2026-02-03T00:00:00.000000Z"}]
+}

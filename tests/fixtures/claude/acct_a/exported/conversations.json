@@ -1,0 +1,44 @@
+[
+  {
+    "uuid": "c1000000-0000-4000-8000-000000000001",
+    "name": "branched",
+    "summary": "s1",
+    "created_at": "2026-03-14T10:00:00.000000Z",
+    "updated_at": "2026-03-14T10:02:05.000000Z",
+    "account": {"uuid": "a0000000-0000-4000-8000-00000000000a"},
+    "chat_messages": [
+      {"uuid": "m1", "parent_message_uuid": "00000000-0000-4000-8000-000000000000", "sender": "human", "text": "u1", "created_at": "2026-03-14T10:00:00.000000Z", "updated_at": "2026-03-14T10:00:00.000000Z", "attachments": [], "files": [],
+       "content": [
+         {"type": "text", "text": "u1", "citations": [], "flags": null, "start_timestamp": null, "stop_timestamp": null},
+         {"type": "voice_note", "title": "vn1", "text": "vn1 text", "flags": null, "start_timestamp": null, "stop_timestamp": null}
+       ]},
+      {"uuid": "m2", "parent_message_uuid": "m1", "sender": "assistant", "text": "", "created_at": "2026-03-14T10:00:05.000000Z", "updated_at": "2026-03-14T10:00:05.000000Z", "attachments": [], "files": [],
+       "content": [
+         {"type": "text", "text": "a1", "citations": [], "flags": null, "start_timestamp": null, "stop_timestamp": null},
+         {"type": "tool_use", "id": "tu1", "name": "t1", "input": {}, "message": "m", "flags": null, "start_timestamp": null, "stop_timestamp": null},
+         {"type": "tool_result", "tool_use_id": "tu1", "name": "t1", "content": [], "is_error": false, "flags": null, "start_timestamp": null, "stop_timestamp": null},
+         {"type": "text", "text": "a1b", "citations": [], "flags": null, "start_timestamp": null, "stop_timestamp": null}
+       ]},
+      {"uuid": "m3", "parent_message_uuid": "m2", "sender": "human", "text": "u2-old", "created_at": "2026-03-14T10:01:00.000000Z", "updated_at": "2026-03-14T10:01:00.000000Z", "attachments": [], "files": [],
+       "content": [{"type": "text", "text": "u2-old", "citations": [], "flags": null, "start_timestamp": null, "stop_timestamp": null}]},
+      {"uuid": "m4", "parent_message_uuid": "m3", "sender": "assistant", "text": "a2-old", "created_at": "2026-03-14T10:01:05.000000Z", "updated_at": "2026-03-14T10:01:05.000000Z", "attachments": [], "files": [],
+       "content": [{"type": "text", "text": "a2-old", "citations": [], "flags": null, "start_timestamp": null, "stop_timestamp": null}]},
+      {"uuid": "m5", "parent_message_uuid": "m2", "sender": "human", "text": "u2-new", "created_at": "2026-03-14T10:02:00.000000Z", "updated_at": "2026-03-14T10:02:00.000000Z", "attachments": [], "files": [],
+       "content": [{"type": "text", "text": "u2-new", "citations": [], "flags": null, "start_timestamp": null, "stop_timestamp": null}]},
+      {"uuid": "m6", "parent_message_uuid": "m5", "sender": "assistant", "text": "a2-new", "created_at": "2026-03-14T10:02:05.000000Z", "updated_at": "2026-03-14T10:02:05.000000Z", "attachments": [], "files": [],
+       "content": [{"type": "text", "text": "a2-new", "citations": [], "flags": null, "start_timestamp": null, "stop_timestamp": null}]}
+    ]
+  },
+  {
+    "uuid": "c1000000-0000-4000-8000-000000000002",
+    "name": "legacy",
+    "summary": "",
+    "created_at": "2026-03-15T08:00:00.000000Z",
+    "updated_at": "2026-03-15T08:00:05.000000Z",
+    "account": {"uuid": "a0000000-0000-4000-8000-00000000000a"},
+    "chat_messages": [
+      {"uuid": "n1", "parent_message_uuid": "00000000-0000-4000-8000-000000000000", "sender": "human", "text": "u1", "content": [], "created_at": "2026-03-15T08:00:00.000000Z", "updated_at": "2026-03-15T08:00:00.000000Z", "attachments": [], "files": []},
+      {"uuid": "n2", "parent_message_uuid": "n1", "sender": "assistant", "text": "a1", "content": [], "created_at": "2026-03-15T08:00:05.000000Z", "updated_at": "2026-03-15T08:00:05.000000Z", "attachments": [], "files": []}
+    ]
+  }
+]

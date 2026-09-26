@@ -1,0 +1,31 @@
+{
+  "conversations": [
+    {
+      "conversation": {"id": "g-conv-1", "title": "leaf set", "summary": "gs1", "create_time": "2026-09-01T10:00:00.000000Z", "modify_time": "2026-09-01T10:05:00.000000Z", "leaf_response_id": "r4", "system_prompt_name": ""},
+      "responses": [
+        {"share_link": null, "response": {"_id": "r1", "conversation_id": "g-conv-1", "parent_response_id": null, "children": ["r2"], "sender": "human", "message": "u1", "model": "", "create_time": {"$date": {"$numberLong": "1788256800000"}}, "file_attachments": ["f1"], "metadata": {}, "path": ""}},
+        {"share_link": null, "response": {"_id": "r2", "conversation_id": "g-conv-1", "parent_response_id": "r1", "children": ["r3"], "sender": "ASSISTANT", "message": "a1", "model": "grok-4", "create_time": {"$date": {"$numberLong": "1788256810000"}}, "file_attachments": [], "metadata": {}, "path": ""}},
+        {"share_link": null, "response": {"_id": "r3", "conversation_id": "g-conv-1", "parent_response_id": "r2", "children": ["r4", "r5"], "sender": "human", "message": "u2", "model": "", "create_time": {"$date": {"$numberLong": "1788256860000"}}, "file_attachments": [], "metadata": {}, "path": ""}},
+        {"share_link": null, "response": {"_id": "r4", "conversation_id": "g-conv-1", "parent_response_id": "r3", "children": [], "sender": "assistant", "message": "a2-chosen", "model": "grok-4", "create_time": {"$date": {"$numberLong": "1788256870000"}}, "file_attachments": [], "metadata": {}, "path": ""}},
+        {"share_link": null, "response": {"_id": "r5", "conversation_id": "g-conv-1", "parent_response_id": "r3", "children": [], "sender": "assistant", "message": "a2-later", "model": "grok-4", "create_time": {"$date": {"$numberLong": "1788256900000"}}, "file_attachments": [], "metadata": {}, "path": ""}}
+      ]
+    },
+    {
+      "conversation": {"id": "g-conv-2", "title": "leaf null", "summary": "", "create_time": "2026-09-02T10:00:00.000000Z", "modify_time": "2026-09-02T10:01:00.000000Z", "leaf_response_id": null, "system_prompt_name": ""},
+      "responses": [
+        {"share_link": null, "response": {"_id": "s1", "conversation_id": "g-conv-2", "parent_response_id": null, "children": ["s2", "s3"], "sender": "human", "message": "u1", "model": "", "create_time": {"$date": {"$numberLong": "1788343200000"}}, "file_attachments": [], "metadata": {}, "path": ""}},
+        {"share_link": null, "response": {"_id": "s2", "conversation_id": "g-conv-2", "parent_response_id": "s1", "children": [], "sender": "assistant", "message": "a1-old", "model": "grok-4", "create_time": {"$date": {"$numberLong": "1788343210000"}}, "file_attachments": [], "metadata": {}, "path": ""}},
+        {"share_link": null, "response": {"_id": "s3", "conversation_id": "g-conv-2", "parent_response_id": "s1", "children": [], "sender": "ASSISTANT", "message": "a1-new", "model": "grok-4", "create_time": {"$date": {"$numberLong": "1788343260000"}}, "file_attachments": [], "metadata": {}, "path": ""}}
+      ]
+    }
+  ],
+  "media_posts": [
+    {"id": "mp1", "user_id": "gu-a", "media_type": "MEDIA_POST_TYPE_IMAGE", "create_time": "2026-09-03T00:00:00.000000Z", "link": "https://example.com/mp1", "original_prompt": "p1"},
+    {"id": "mp2", "user_id": "gu-a", "media_type": "MEDIA_POST_TYPE_VIDEO", "create_time": "2026-09-04T00:00:00.000000Z", "link": "https://example.com/mp2", "original_prompt": "p2"}
+  ],
+  "projects": [
+    {"workspace_id": "ws1", "name": "proj one", "custom_personality": "cp1", "create_time": "2026-08-01T00:00:00.000000Z"},
+    {"workspace_id": "ws2", "name": "proj two", "custom_personality": "", "create_time": "2026-08-02T00:00:00.000000Z"}
+  ],
+  "tasks": []
+}

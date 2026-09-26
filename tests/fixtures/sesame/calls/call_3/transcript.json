@@ -1,0 +1,8 @@
+{
+  "original_trace_duration_ms": 60000,
+  "total_segments": 2,
+  "conversation": [
+    {"role": "assistant", "content": "a1", "start_time_ms": 0, "end_time_ms": 1000, "interrupted": false},
+    {"role": "user", "content": "u1", "start_time_ms": 1000, "end_time_ms": 2000, "interrupted": false}
+  ]
+}

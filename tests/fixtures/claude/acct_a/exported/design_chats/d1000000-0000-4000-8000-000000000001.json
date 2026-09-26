@@ -1,0 +1,14 @@
+{
+  "uuid": "d1000000-0000-4000-8000-000000000001",
+  "title": "design one",
+  "created_at": "2026-04-01T12:00:00.000000Z",
+  "updated_at": "2026-04-01T12:00:10.000000Z",
+  "project": {"uuid": "p1000000-0000-4000-8000-000000000001", "name": "proj one"},
+  "messages": [
+    {"uuid": "dm1", "role": "user", "created_at": "2026-04-01T12:00:00.000000Z",
+     "content": {"id": "dm1", "role": "user", "kind": "message", "content": "du1", "attachments": [], "authorAccountUuid": "a0000000-0000-4000-8000-00000000000a", "authorName": "Acct A", "timestamp": "2026-04-01T12:00:00.000000Z"}},
+    {"uuid": "dm2", "role": "assistant", "created_at": "2026-04-01T12:00:10.000000Z",
+     "content": {"id": "dm2", "role": "assistant", "content": "", "timestamp": "2026-04-01T12:00:10.000000Z", "turnInputTokens": 1,
+                 "contentBlocks": [{"type": "thinking", "thinking": "t"}, {"type": "text", "text": "da1"}, {"type": "tool_call", "name": "t1"}]}}
+  ]
+}

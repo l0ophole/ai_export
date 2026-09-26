@@ -1,0 +1,12 @@
+{
+  "original_trace_duration_ms": 300000,
+  "total_segments": 6,
+  "conversation": [
+    {"role": "user", "content": "u1a", "start_time_ms": 1000, "end_time_ms": 2000, "interrupted": false},
+    {"role": "user", "content": "u1b", "start_time_ms": 2000, "end_time_ms": 3000, "interrupted": false},
+    {"role": "assistant", "content": "a1a", "start_time_ms": 3000, "end_time_ms": 4000, "interrupted": false},
+    {"role": "assistant", "content": "a1b", "start_time_ms": 4000, "end_time_ms": 5000, "interrupted": true},
+    {"role": "user", "content": "u2", "start_time_ms": 5000, "end_time_ms": 6000, "interrupted": false},
+    {"role": "assistant", "content": "a2", "start_time_ms": 6000, "end_time_ms": 7000, "interrupted": false}
+  ]
+}
