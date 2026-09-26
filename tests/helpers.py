@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
 from pathlib import Path
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -30,12 +29,6 @@ def texts(conv):
 def assert_utc_z(tc, ts):
     tc.assertIsNotNone(ts)
     tc.assertRegex(ts, _UTC_Z)
-
-
-def assert_utc(tc, ts):
-    """UTC but offset-form accepted (source passthrough like '+00:00')."""
-    dt = datetime.fromisoformat(ts.replace("Z", "+00:00"))
-    tc.assertEqual(dt.utcoffset(), timezone.utc.utcoffset(None))
 
 
 def assert_messages_utc_z(tc, conv):

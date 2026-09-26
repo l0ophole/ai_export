@@ -1,6 +1,6 @@
 import unittest
 
-from helpers import FIXTURES, assert_messages_utc_z, assert_utc, roles, run, texts
+from helpers import FIXTURES, assert_messages_utc_z, assert_utc_z, roles, run, texts
 from src.adapters.sesame import SesameAdapter
 
 
@@ -38,10 +38,11 @@ class SesameFixtureTest(unittest.TestCase):
 
     def test_timestamps(self):
         self.assertEqual(self.by_id["1"]["messages"][1]["ts"], "2026-07-07T15:35:03Z")
+        self.assertEqual(self.by_id["1"]["created_at"], "2026-07-07T15:35:00Z")
+        self.assertEqual(self.by_id["1"]["updated_at"], "2026-07-07T15:40:00Z")
         for c in self.convs:
-            # created_at/ended_at pass through from calls_data.json as "+00:00", not "Z".
-            assert_utc(self, c["created_at"])
-            assert_utc(self, c["updated_at"])
+            assert_utc_z(self, c["created_at"])
+            assert_utc_z(self, c["updated_at"])
             assert_messages_utc_z(self, c)
 
     def test_artifacts(self):

@@ -23,6 +23,10 @@ def _iso(dt: datetime) -> str:
     return dt.isoformat().replace("+00:00", "Z")
 
 
+def _utc_z(ts: str | None) -> str | None:
+    return _iso(datetime.fromisoformat(ts).astimezone(timezone.utc)) if ts else None
+
+
 class SesameAdapter:
     platform = "sesame"
 
@@ -116,8 +120,8 @@ class SesameAdapter:
             native_id=native_id,
             kind="voice_call",
             title=None,
-            created_at=call.get("created_at"),
-            updated_at=call.get("ended_at"),
+            created_at=_utc_z(call.get("created_at")),
+            updated_at=_utc_z(call.get("ended_at")),
             model=None,
             project_ref=None,
             messages=messages,
